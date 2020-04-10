@@ -5,47 +5,57 @@ import { Link } from 'react-router-dom';
 const userList = () => {
 
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const [users, setUsers] = useState([])
     const [tempDelete, setTempDelete] = useState('')
+    const [msg, setMsg] = useState('')
 
 
     useEffect(() => {
         const fetchUser = async () => {
             setLoading(true);
-            await axios.get('http://localhost:3000/users')
-                .then(response => {
-                    setUsers(response.data)
-                    setLoading(false)
+            await axios.get('/api/users')
+                .then(res => setUsers(res.data))
+                .catch(err => {
+                    setError(`${err}`)
+                    setTimeout(() => setError(''), 5000)
                 })
-                .catch((error) => {
-                    console.log(error);
-                })
+            setLoading(false)
+
         }
         fetchUser()
     }, [])
 
     useEffect(() => {
-        if (tempDelete !== '') {
+        if (tempDelete) {
             const deleteUser1 = async () => {
-                await axios.delete('http://localhost:3000/users/' + tempDelete)
-                    .then(() => {
+                await axios.delete('/api/users/' + tempDelete)
+                    .then(res => {
                         setUsers(users.filter(user => user._id !== tempDelete))
                         setTempDelete('')
+                        setMsg(`User: ${res.data}`)
                     })
-
+                    .catch(err => {
+                        setError(`${err}`)
+                        setTimeout(() => setError(''), 5000)
+                    })
             }
             deleteUser1()
         }
+        
+        const timer = setTimeout(() => setMsg(''), 5000)
+        return () => {
+            clearTimeout(timer)
+        }
     }, [tempDelete])
 
-
-    if (loading) {
-        return <h2>Loading...</h2>
-    }
+    if (loading) return <h2 className="font-weight-bold">Loading...</h2>
+    if (error) return <h2 className="text-danger font-weight-bold">{error}</h2>
 
     return (
 
         <div>
+            {msg && <h3 className="text-danger font-weight-bold text-center m-2">{msg}</h3>}
             <table className="table text-center">
                 <thead className="thead-light">
                     <tr>

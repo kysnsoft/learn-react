@@ -9,20 +9,11 @@ function loginUser(props) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const user = {
-            name,
-            psw
-        }
-        axios.post('http://localhost:3000/users/login', user)
+        const user = { name, psw }
+        axios.post('/api/users/login', user)
             .then((res) => {
-                if (res.data !== null) {
-                    setName('')
-                    setPsw('')
-                    setErrorMsg('')
-                    setUser(res.data)
-                }
-                setErrorMsg(`Wrong Name or Password!`)
-                //location.replace('/main/:id')
+                res.data.user ?
+                    setUser(res.data.user) : setErrorMsg(res.data.msg)
             })
             .catch(err => { console.log(err) })
     }
@@ -31,9 +22,7 @@ function loginUser(props) {
         if (user !== '')
             props.history.push({
                 pathname: '/users/main',
-                state: {
-                    user
-                }
+                search: `?user=${user._id}`
             })
     }, [user])
 

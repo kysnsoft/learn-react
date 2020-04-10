@@ -16,22 +16,25 @@ let counterUser = 0
 
 io.on("connection", socket => {
 
-    console.log('Client connect.', socket.id)
-    counterUser++
-    io.emit('addUser', { counterUser })
-
-    socket.on('disconnect', () => {
-        console.log("Client disconnected", socket.id)
-        counterUser--
-        io.emit('addUser', { counterUser })
-    })
-
     const serviceA = client.connect('http://localhost:4000', {
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
         reconnectionAttempts: Infinity
     })
+
+    console.log(`Connect: --Client-- ${socket.id}`)
+    counterUser++
+    io.emit('userCount', { counterUser })
+
+    socket.on('disconnect', (data) => {
+        serviceA.emit('disconnectTopic')
+
+        console.log(`Disconnected: --Client-- ${socket.id}`)
+        counterUser--
+        io.emit('userCount', { counterUser })
+    })
+
 
     serviceA.on('topics', (data) => {
         io.emit('topics', data)

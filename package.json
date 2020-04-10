@@ -3,17 +3,23 @@
   "version": "0.0.1",
   "author": "SNSKL",
   "scripts": {
+    "server-install": "cd src/pages/chokkahyang/backend && npm install",
     "dev": "webpack-dev-server --env local --port 8080 --hot --mode development --config webpack.dev.config.js",
-    "serverA": "nodemon src/pages/chokkahyang/backend/serviceA/serverTopic.js"
+    "serverUser": "cd src/pages/chokkahyang/backend/serviceA && nodemon serverUser",
+    "serverTopic": "cd src/pages/chokkahyang/backend/serviceA && nodemon serverTopic",
+    "socket": "cd src/pages/chokkahyang/backend/serviceB && nodemon server",
+    "server": "concurrently \"npm run serverUser\" \"npm run serverTopic\" \"npm run socket\""
   },
   "dependencies": {
     "@babel/polyfill": "^7.7.0",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
+    "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.0",
+    "http-proxy-middleware": "^1.0.3",
     "moment": "^2.24.0",
     "mongoose": "^5.9.3",
     "nodemon": "^2.0.2",

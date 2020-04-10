@@ -4,6 +4,7 @@ import ManageTopic from './manageTopic'
 import io from "socket.io-client"
 import _ from 'lodash'
 import moment from 'moment'
+import axios from 'axios'
 
 export default class mainPage extends Component {
 
@@ -11,15 +12,18 @@ export default class mainPage extends Component {
         super(props);
         this.state = {
             topics: [],
-            isLoading: false,
+            isLoading: true,
             currentTotal: 1,
             resultMsg: '',
             msgColor: false,
-            editTopic: {}
+            editTopic: {},
+            currentUser: ''
         };
 
         this.socket = io('http://localhost:8000')
-        this.socket.on('addUser', data => this.setState({ currentTotal: data.counterUser }))
+        this.socket.on('userCount', data => {
+            this.setState({ currentTotal: data.counterUser })
+        })
 
         this.socket.on('topics', data => {
             this.setState({ topics: data, isLoading: false })
@@ -32,18 +36,16 @@ export default class mainPage extends Component {
         this.handleAdd = this.handleAdd.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
         this.handleEdit = this.handleEdit.bind(this)
+        this.logoutHandle = this.logoutHandle.bind(this)
+    }
+
+    handleAdd(topicName, content) {
+        const newTopic = { topicName, content, }
+        this.socket.emit('topic:add', { newTopic })
     }
 
     handleDelete(deleteId) {
         this.socket.emit('topic:delete', { deleteId })
-    }
-
-    handleAdd(topicName, content) {
-        const newTopic = {
-            topicName,
-            content,
-        }
-        this.socket.emit('topic:add', { newTopic })
     }
 
     handleEdit(topicName, content, id) {
@@ -51,24 +53,40 @@ export default class mainPage extends Component {
             editTopic: {}
         })
 
-        const editTopic = {
-            topicName,
-            content,
-        }
+        const editTopic = { topicName, content, }
         this.socket.emit('topic:edit', { editTopic, id })
     }
 
+    logoutHandle(id) {
+        axios.post('/api/users/logout/' + id)
+            .then(() => {
+                this.socket.disconnect();
+                this.props.history.goBack()
+            })
+            .catch(err => { console.log(err) })
+    }
+
+    async componentDidMount() {
+        const res = await axios.get('/api/users/')
+        const users = res.data
+
+        const currentUser = users.find(user => user._id === this.props.history.location.search.replace('?user=', ''))
+        if (!currentUser.isLogged)
+            this.props.history.push('/').goBack()
+
+        this.setState({ currentUser, isLoading: false })
+
+    }
+
     componentWillUnmount() {
-        this.socket.off('topics')
-        this.socket.off('topic:delete')
-        this.socket.off('resultMsg')
-        this.socket.off('addUser')
+        this.socket.disconnect()
     }
 
     render() {
-        const { _id, name } = this.props.history.location.state.user
+        const { _id, name } = this.state.currentUser
         const { topics, isLoading, resultMsg, msgColor, editTopic } = this.state
 
+        console.log(topics)
         if (isLoading) {
             return <h2>Loading ... </h2>
         }
@@ -78,6 +96,8 @@ export default class mainPage extends Component {
                 <div className="flex">
                     <h3 className="font-weight-bold m-2 text-white w-75">Total User: {this.state.currentTotal}</h3>
                     <h3 className="font-weight-bold m-2 text-white w-25">Current User: {name}</h3>
+                    <button onClick={() => this.logoutHandle(_id)}
+                        className="btn btn-dark m-2" >LOGOUT</button>
                 </div>
                 {resultMsg && <h3 className="text-center font-weight-bold"
                     style={{ color: msgColor ? 'green' : 'red' }}>{resultMsg}</h3>}

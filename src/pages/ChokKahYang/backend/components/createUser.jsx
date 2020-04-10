@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 
 
-const createUser = (props) => {
+const createUser = () => {
 
+    const [load, setLoad] = useState(false)
     const [name, setName] = useState('')
     const [psw, setPsw] = useState('')
     const [age, setAge] = useState('')
@@ -12,23 +13,19 @@ const createUser = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const user = {
-            name,
-            psw,
-            age,
-            position
-        }
+        setLoad(true)
 
-        axios.post('http://localhost:3000/users/add', user)
-            .then(() => {
-                setName('')
-                setPsw('')
-                setAge('')
-                setPosition('')
-                location.replace('/users')
+        const user = { name, psw, age, position }
+
+        axios.post('/api/users/add', user)
+            .then(() => location.replace('/users'))
+            .catch(err => {
+                setLoad(false)
+                setErrorMsg(err.response.data)
             })
-            .catch(err => { setErrorMsg(err.response.data) })
     }
+
+    if (load) return <h2>Processing...</h2>
 
     return (
         <div>

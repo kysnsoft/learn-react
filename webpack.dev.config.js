@@ -35,7 +35,7 @@ module.exports = env => {
                 },
                 {
                     test: /\.(sc|sa|c)ss$/,
-                    use: ["style-loader", {loader: "css-loader"}, {loader: "sass-loader"}],
+                    use: ["style-loader", { loader: "css-loader" }, { loader: "sass-loader" }],
                 },
                 {
                     test: /\.(png|jpg|gif|svg)$/,
@@ -71,6 +71,12 @@ module.exports = env => {
         devServer: {
             historyApiFallback: true,
             hot: true,
+            proxy: {
+                '/api/users': {
+                    target: 'http://localhost:3000',
+                    changeOrigin: true
+                }
+            }
         },
         devtool: "#eval-source-map",
     };

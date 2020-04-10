@@ -1,5 +1,4 @@
 const express = require('express')
-const cors = require('cors')
 const mongoose = require('mongoose')
 
 require('dotenv').config({ path: './config.env' })
@@ -7,24 +6,27 @@ require('dotenv').config({ path: './config.env' })
 const app = express()
 const port = process.env.PORT || 3000
 
-app.use(cors())
 app.use(express.json())
 
-const uri = process.env.ATLAS_URI
-mongoose.connect(uri,
-    { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
-)
-const connection = mongoose.connection
-connection.once('open', () => {
-    console.log("MongoDB database connection established successfully")
+mongoose.connect(process.env.ATLAS_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+}).catch(err => {
+    console.log(`User DB Error: ${err.message}`)
 })
 
+mongoose.connection.once('open', () => {
+    console.log("MongoDB database (User) connection established successfully")
+})
+/////
 const usersRouter = require('./routes/users')
-app.use('/users', usersRouter)
+app.use('/api/users', usersRouter)
 
 
 app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`)
+    console.log(`User HTTP server is running on port: ${port}`)
 })
 
 

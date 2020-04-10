@@ -23,6 +23,10 @@ const userSchema = new Schema({
     position: {
         type: String,
         required: true
+    },
+    isLogged: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

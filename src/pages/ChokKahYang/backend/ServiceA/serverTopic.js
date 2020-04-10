@@ -1,28 +1,30 @@
-const axios = require('axios')
+const axios = require('./axiosConfig')
 const express = require('express')
-const cors = require('cors')
 const mongoose = require('mongoose')
+
 const app = express()
+const port = process.env.PORT || 4000
 
 require('dotenv').config({ path: './config.env' })
 
-app.use(cors())
 app.use(express.json())
 
-const port = process.env.PORT || 4000
-
-//Mongo DB
-const uri = process.env.ATLAS_URI
-mongoose.connect(uri,
-    { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
-)
-const connection = mongoose.connection
-connection.once('open', () => {
-    console.log("MongoDB database connection established successfully")
+//MongoDB
+mongoose.connect(process.env.ATLAS_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+}).catch(err => {
+    console.log(`Topic DB Error: ${err.message}`)
 })
+
+mongoose.connection.once('open', () =>
+    console.log(`MongoDB database (Topic) connection established successfully`)
+)
 /////////
 const topicsRouter = require('./routes/topics')
-app.use('/topics', topicsRouter)
+app.use('/api/topics', topicsRouter)
 ////////
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
@@ -30,30 +32,31 @@ const io = require('socket.io')(server)
 
 let topics = []
 
+
 //Get all topics
 const getTopicAndEmit = async socket => {
     try {
-        const res = await axios.get('http://localhost:4000/topics')
+        const res = await axios.get('/api/topics')
         topics = res.data
         socket.emit('topics', topics)
     } catch (err) {
-        console.log(`Error: ${err}`)
+        console.log(`${err}`)
     }
 }
 
 
 io.on("connection", socket => {
-    console.log(`Service B connected ${socket.id}`)
+    console.log(`Connect: --ServiceTopic-- ${socket.id}`)
 
-    socket.on('disconnect', () => {
-        console.log("Service B disconnected", socket.id)
+    socket.on('disconnectTopic', () => {
+        console.log(`Disconnected: --ServiceTopic-- ${socket.id}`)
     })
 
     getTopicAndEmit(socket)
 
     socket.on('topic:delete', async data => {
         try {
-            const resDel = await axios.delete('http://localhost:4000/topics/' + data.deleteId)
+            const resDel = await axios.delete('/api/topics/' + data.deleteId)
             topics = topics.filter(topic => topic._id !== data.deleteId)
 
             socket.emit('topic:delete', {
@@ -70,8 +73,8 @@ io.on("connection", socket => {
 
     socket.on('topic:add', async data => {
         try {
-            const resAdd = await axios.post('http://localhost:4000/topics/add', data.newTopic)
-            const newTopics = await axios.get('http://localhost:4000/topics')
+            const resAdd = await axios.post('/api/topics/add', data.newTopic)
+            const newTopics = await axios.get('/api/topics')
             topics = newTopics.data
 
             socket.emit('topic:add', {
@@ -94,8 +97,8 @@ io.on("connection", socket => {
 
     socket.on('topic:edit', async data => {
         try {
-            const resEdit = await axios.post('http://localhost:4000/topics/edit/' + data.id, data.editTopic)
-            const newTopics = await axios.get('http://localhost:4000/topics')
+            const resEdit = await axios.post('/api/topics/edit/' + data.id, data.editTopic)
+            const newTopics = await axios.get('/api/topics')
             topics = newTopics.data
 
             socket.emit('topic:edit', {
@@ -115,11 +118,9 @@ io.on("connection", socket => {
             })
         }
     })
-
 })
 
 
-
 server.listen(port, () => {
-    console.log(`Socket server is running on port : ${port}`)
+    console.log(`Topic socket server is running on port : ${port}`)
 })

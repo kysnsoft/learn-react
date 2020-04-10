@@ -5,15 +5,18 @@ import axios from 'axios'
 function editUser(props) {
 
     const { name, psw, age, position } = props.location.state.user
-    const [tempName, setName] = useState('')
+
+    const [load, setLoad] = useState(false)
+    const [tempName, setName] = useState(name)
     const [tempPsw, setPsw] = useState('')
-    const [tempAge, setAge] = useState('')
-    const [tempPosition, setPosition] = useState('')
+    const [tempAge, setAge] = useState(age)
+    const [tempPosition, setPosition] = useState(position)
     const [errorMsg, setErrorMsg] = useState('')
 
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setLoad(true)
 
         const editUser = {
             name: tempName,
@@ -22,18 +25,17 @@ function editUser(props) {
             position: tempPosition,
         }
 
-        axios.post('http://localhost:3000/users/edit/' + props.match.params.id, editUser)
-            .then(() => {
-                setName('')
-                setPsw('')
-                setAge('')
-                setPosition('')
-                location.replace('/users')
+        axios.post('/api/users/edit/' + props.match.params.id, editUser)
+            .then(() => location.replace('/users'))
+            .catch(err => {
+                setLoad(false)
+                setErrorMsg(err.response.data)
             })
-            .catch(err => { setErrorMsg(err.response.data) })
 
-        location.replace('/users')
     }
+
+    if (load) return <h2>Processing...</h2>
+
     return (
         <div>
             <h3>Edit User</h3>
@@ -74,11 +76,11 @@ function editUser(props) {
                         placeholder={position}
                         onChange={(e) => setPosition(e.target.value)} />
                 </div>
-                <div className="form-group">
-                    <input type="submit" value="Edit User" className="btn btn-dark" />
-                </div>
                 <div>
                     {errorMsg !== '' && <h6 className="font-weight-bold text-danger">{errorMsg}</h6>}
+                </div>
+                <div className="form-group">
+                    <input type="submit" value="Edit User" className="btn btn-dark" />
                 </div>
             </form>
             <button onClick={props.history.goBack}
