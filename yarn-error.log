@@ -1,0 +1,77 @@
+Arguments: 
+  D:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add reactjs-popup
+
+PATH: 
+  C:\Python27\;C:\Python27\Scripts;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;D:\xampp\php;C:\ProgramData\ComposerSetup\bin;D:\flutter\bin;C:\ProgramData\chocolatey\bin;C:\Program Files\Java\jdk1.8.0_211\bin;C:\Program Files (x86)\Yarn\bin\;D:\Program Files\Git\cmd;D:\Program Files\nodejs\;C:\Users\user\AppData\Local\Microsoft\WindowsApps;D:\Users\user\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\user\AppData\Local\GitHubDesktop\bin;C:\Users\user\AppData\Roaming\Composer\vendor\bin;C:\Users\user\AppData\Local\Programs\Microsoft VS Code Insiders\bin;C:\Users\user\AppData\Local\atom-nightly\bin;D:\Program Files\nodejs\npm;C:\Program Files\MongoDB\Server\4.2\bin;C:\Users\user\AppData\Local\Android\Sdk\platform-tools;C:\Users\user\AppData\Local\Yarn\bin;C:\Users\user\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.0
+
+Node version: 
+  13.11.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\user\Desktop\Internship\learn-react\node_modules\node-sass\vendor\win32-x64-79\binding.node'
+
+npm manifest: 
+  {
+    "name": "react-learning",
+    "version": "0.0.1",
+    "author": "SNSKL",
+    "scripts": {
+      "dev": "webpack-dev-server --env local --port 3000 --hot --mode development --config webpack.dev.config.js",
+      "serverA": "nodemon src/pages/chokkahyang/backend/serviceA/serverTopic.js"
+    },
+    "dependencies": {
+      "@babel/polyfill": "^7.7.0",
+      "axios": "^0.19.2",
+      "bootstrap": "^4.4.1",
+      "cors": "^2.8.5",
+      "dotenv": "^8.2.0",
+      "express": "^4.17.1",
+      "express-http-proxy": "^1.6.0",
+      "moment": "^2.24.0",
+      "mongoose": "^5.9.3",
+      "nodemon": "^2.0.2",
+      "react": "^16.12.0",
+      "react-chartjs-2": "^2.9.0",
+      "react-dom": "^16.12.0",
+      "react-hook-form": "^4.10.1",
+      "react-router-dom": "^5.1.2",
+      "reactjs-popup": "^1.5.0",
+      "reactstrap": "^8.4.1",
+      "request-promise-native": "^1.0.8",
+      "socket.io": "^2.3.0"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.7.5",
+      "@babel/plugin-proposal-class-properties": "^7.8.3",
+      "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+      "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+      "@babel/preset-env": "^7.7.6",
+      "@babel/preset-react": "^7.7.4",
+      "babel-loader": "^8.0.6",
+      "clean-webpack-plugin": "^3.0.0",
+      "copy-webpack-plugin": "^5.1.1",
+      "css-loader": "^3.4.0",
+      "file-loader": "^5.0.2",
+      "html-webpack-plugin": "^3.2.0",
+      "mini-css-extract-plugin": "^0.8.2",
+      "node-sass": "^4.13.0",
+      "prop-types": "^15.7.2",
+      "sass-loader": "^8.0.0",
+      "style-loader": "^1.1.2",
+      "webpack": "^4.41.6",
+      "webpack-cli": "^3.3.10",
+      "webpack-dev-server": "^3.9.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

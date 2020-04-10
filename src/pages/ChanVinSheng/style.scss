@@ -6,6 +6,12 @@
   font-size: 20px;
 }
 
+.container-button {
+  max-width: 1000px;
+  min-width: 650px;
+  margin: 0 auto;
+}
+
 .container {
   max-width: 1000px;
   min-width: 650px;
@@ -165,4 +171,13 @@
 
 .rightSticky a:hover {
   color: white;
+}
+
+.detail-form {
+  padding: 20px;
+}
+
+.detail-button,
+.detail-input {
+  text-align: center;
 }

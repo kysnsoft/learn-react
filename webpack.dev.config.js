@@ -12,7 +12,7 @@ module.exports = env => {
         output: {
             path: BUILD_DIR,
             filename: "js/main.[hash:6].js",
-            publicPath: "/",
+            publicPath: "/"
         },
         module: {
             rules: [
@@ -23,50 +23,54 @@ module.exports = env => {
                     options: {
                         presets: [
                             "@babel/preset-react",
-                            "@babel/preset-env", {
-                                "include": [
+                            "@babel/preset-env",
+                            {
+                                include: [
                                     "@babel/plugin-proposal-object-rest-spread",
                                     "@babel/plugin-proposal-class-properties"
-
                                 ]
                             }
                         ]
-                    },
+                    }
                 },
                 {
                     test: /\.(sc|sa|c)ss$/,
-                    use: ["style-loader", { loader: "css-loader" }, { loader: "sass-loader" }],
+                    use: [
+                        "style-loader",
+                        { loader: "css-loader" },
+                        { loader: "sass-loader" }
+                    ]
                 },
                 {
                     test: /\.(png|jpg|gif|svg)$/,
                     use: "file-loader?name=images/img-[hash:6].[ext]&publicPath=/",
-                    exclude: /node_modules/,
+                    exclude: /node_modules/
                 },
                 {
                     test: /\.mp3$/,
                     use: "file-loader?name=images/img-[hash:6].[ext]&publicPath=/",
-                    exclude: /node_modules/,
-                },
-            ],
+                    exclude: /node_modules/
+                }
+            ]
         },
         resolve: {
-            extensions: [".js", ".json", ".jsx"],
+            extensions: [".js", ".json", ".jsx"]
         },
         plugins: [
             new HtmlWebPackPlugin({
                 template: "public/index.html",
                 filename: "index.html",
-                chunksSortMode: 'none',
+                chunksSortMode: "none"
             }),
             new MiniCssExtractPlugin({
                 filename: "[name].[hash:6].css",
-                chunkFilename: "[id].[hash:6].css",
+                chunkFilename: "[id].[hash:6].css"
             }),
             new webpack.DefinePlugin({
                 "process.env": {
                     ENV: JSON.stringify(env)
-                },
-            }),
+                }
+            })
         ],
         devServer: {
             historyApiFallback: true,
@@ -78,6 +82,6 @@ module.exports = env => {
                 }
             }
         },
-        devtool: "#eval-source-map",
+        devtool: "#eval-source-map"
     };
 };

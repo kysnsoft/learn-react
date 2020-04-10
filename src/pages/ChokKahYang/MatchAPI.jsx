@@ -1,41 +1,41 @@
 import React, { useState, useEffect } from 'react'
+import Popup from 'reactjs-popup'
 import MatchList from './MatchList'
 import Pagination from './Pagination'
 import callApi from "../DotaAPI/FetchFunction"
 
-function MatchAPI() {
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"
+import subDays from "date-fns/subDays";
 
-    const [matches, setMatches] = useState([])
-    const [heros, setHeros] = useState([])
+import Modal from './Model'
+import ItemChart from './ItemChart'
+import Pie from '../DotaAPI/Pie'
+import LineChart from '../Timothy/lineChart'
 
-    const [clusters, setCluster] = useState([])
+const date = new Date()
+date.setDate(date.getDate() - 1)
+
+function MatchAPI({ publicMatches, heros, clusters, itemsID, items }) {
+
+
+    const [startDate, setStartDate] = useState(date)
+    const [endDate, setEndDate] = useState(new Date())
+
     const [regions, setRegions] = useState({})
 
-    const [loading, setLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [matchesPerPage] = useState(15)
 
-    useEffect(() => {
-        const fetchMatchs = async () => {
-            setMatches(await callApi('/publicMatches'))
-            setHeros(await callApi('/heroStats'))
-            setCluster(await callApi('/constants/cluster'))
-            setLoading(false)
-        }
-        fetchMatchs()
-    }, [])
-
-
     const indexOfLastMatch = currentPage * matchesPerPage
     const indexOfFirstMatch = indexOfLastMatch - matchesPerPage
-    const currentMatch = matches.slice(indexOfFirstMatch, indexOfLastMatch)
+    const currentMatch = publicMatches.slice(indexOfFirstMatch, indexOfLastMatch)
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
-
     useEffect(() => {
         const fetchRegions = async () => {
-            const region = await getApi('https://api.opendota.com/api/constants/region')
+            const region = await callApi('/constants/region')
             setRegions({
                 ...region,
                 5: "SE Asia", 8: "RUSSIA", 12: "CHINA", 13: "CHINA",
@@ -45,11 +45,8 @@ function MatchAPI() {
         fetchRegions()
     }, []);
 
-    if (loading) {
-        return <h2>Loading...</h2>
-    }
-
     return (
+
         <div className="m-3 clearfix">
             <div className="flex font-weight-bold text-light text-center">
                 <div className="m-2 w-25">Match ID</div>
@@ -61,11 +58,63 @@ function MatchAPI() {
             </div>
             {currentMatch.map(match =>
                 (<MatchList key={match.match_id}
-                    match={match} heros={heros} clusters={clusters} regions={regions} />)
+                    match={match} heros={heros} clusters={clusters} regions={regions}
+                    itemsID={itemsID} items={items} />)
             )}
-            <Pagination matchesPerPage={matchesPerPage} totalMatches={matches.length} paginate={paginate} />
+
+            <nav className="p-4 mr-4 float-left">
+                <ul className="pagination ">
+                    <Popup modal trigger={
+                        <button className="btn btn-dark m-1">
+                            Pie Chart
+                        </button>}>
+                        {close => <Pie info={currentMatch} heros={heros} close={close} />}
+                    </Popup>
+
+                    <Popup modal trigger={
+                        <button className="btn btn-dark m-1">
+                            Bar Chart
+                        </button>}>
+                        {close => <Modal close={close} />}
+                    </Popup>
+
+                    <Popup modal trigger={
+                        <button className="btn btn-dark m-1">
+                            Statistic (Line)
+                        </button>}>
+                        {close => <LineChart close={close} />}
+                    </Popup>
+
+                    <Popup modal trigger={
+                        <button className="btn btn-dark m-1">
+                            Items
+                        </button>}>
+                        <ItemChart items={items} startDate={startDate} endDate={endDate} />
+                    </Popup>
+                    <li>
+                        <DatePicker className="m-1"
+                            selected={startDate}
+                            onChange={date => setStartDate(date)}
+                            minDate={subDays(new Date(), 14)}
+                            maxDate={new Date()} />
+                    </li>
+                    <li>
+                        <DatePicker className="m-1"
+                            selected={endDate}
+                            onChange={date => setEndDate(date)}
+                            minDate={subDays(new Date(), 13)}
+                            maxDate={new Date()} />
+                    </li>
+                </ul>
+
+            </nav>
+
+
+            <Pagination matchesPerPage={matchesPerPage} totalMatches={publicMatches.length} paginate={paginate} />
         </div>
     )
+
+
 }
 
 export default MatchAPI

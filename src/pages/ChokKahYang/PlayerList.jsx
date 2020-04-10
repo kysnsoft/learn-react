@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-function PlayerList({ player, heros, items, itemsId }) {
+function PlayerList({ player, heros, items, itemsID }) {
 
     const { hero_id, level, personaname, isRadiant } = player
     const { kills, deaths, assists, last_hits, denies, gold_per_min, xp_per_min } = player
     const { item_0, item_1, item_2, item_3, item_4, item_5 } = player
-
     const playerItems = []
     playerItems.push(item_0, item_1, item_2, item_3, item_4, item_5)
 
     playerItems.forEach(
-        (element, index, array) =>
-            array[index] = itemsId[element]
+        (element, index, array) => {
+            array[index] = itemsID[element]
+        }
     )
 
     playerItems.forEach(
         (element, index, array) => {
             if (element !== undefined) {
+                //console.log(items[element].attrib)
                 array[index] = {
                     img: items[element].img,
                     text: element
@@ -25,6 +26,7 @@ function PlayerList({ player, heros, items, itemsId }) {
             }
         }
     );
+    //console.log(player)
 
     const imgAdd = "http://cdn.dota2.com/"
     const hero = heros.filter(hero => hero.id === hero_id)[0]
@@ -32,7 +34,12 @@ function PlayerList({ player, heros, items, itemsId }) {
     return (
         <div className="flex text-center mb-2" id="none">
             <div className="w-25">
-                <Link to={`../HeroProfile/${hero.localized_name}`}>
+                <Link to={{
+                    pathname: `../HeroProfile/${hero.localized_name}`,
+                    state: {
+                        heroInfo: heros
+                    }
+                }}>
                     <img src={imgAdd + hero.img} width='60' title={hero.localized_name} />
 
                     <span className="position-absolute small-level">{level}</span>

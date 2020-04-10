@@ -1,82 +1,103 @@
-/*
- My code starts here
-*/
-import React from "react";
-import BasePage from "../basePage/basePage";
-import "./timothy.scss";
+import React from 'react'
+import BasePage from '../basePage/basePage'
+import './timothy.scss'
+
+function stringifyFormData(fd) {
+  const data = {}
+  for (let key of fd.keys()) {
+    data[key] = fd.get(key)
+  }
+  return JSON.stringify(data, null, 2)
+}
+
+function displayResult(data, field) {
+  const toRender = JSON.parse(data)
+  console.log(toRender[field])
+  return toRender[field]
+}
 
 export default class Timothy extends React.Component {
+  constructor(props) {
+    super(props)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.state = {
+      name: '',
+      age: 0,
+      place: '',
+      occupation: '',
+    }
+  }
+
+  handleSubmit(e) {
+    e.preventDefault()
+    const data = new FormData(e.target)
+
+    this.setState({
+      res: stringifyFormData(data),
+    })
+  }
+
+  displayResult(data, field) {
+    const toRender = JSON.parse(data)
+    console.log(toRender[field])
+    return toRender[field]
+  }
+
   render() {
-    const timothy = {
-      name: "Timothy Goh",
-      age: 22,
-      occupation: "developer",
-      hobby: "photography",
-      msg:
-        "Why I choose to be a developer? I feel this kind of occupation is intruiging. All I need to do is to just deal with the problem I faced and fix it.",
-      birthday: "6th May 1998",
-      email: "timothygoh@snsoft.my",
-      contact: "+60 16 - 576 9856"
-    };
-    const {
-      name,
-      age,
-      occupation,
-      hobby,
-      msg,
-      birthday,
-      email,
-      contact
-    } = timothy;
     return (
       <BasePage>
-        <div className={"container box"}>
-          <div className={"card-layout"}>
-            <div className={"media img-panel"}>
-              <img
-                src="https://pbs.twimg.com/profile_images/1150311201668157441/XMMLZugM_400x400.png"
-                alt="profile-pic"
-              />
+        <div className="container box">
+          <div className={'card-layout'}>
+            <div className="user-input-field">
+              <form onSubmit={this.handleSubmit}>
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Name</th>
+                      <td>
+                        <input type="text" name="name" id="name" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Age</th>
+                      <td>
+                        <input type="number" name="age" id="age" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Birth place</th>
+                      <td>
+                        <input type="text" name="place" id="place" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Occupation</th>
+                      <td>
+                        <input type="text" name="occupation" id="occupation" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button type="submit">Save</button>
+              </form>
             </div>
-            <div className={"desc-panel"}>
-              <h6>Hi, I am</h6>
-              <h3>{name}</h3>
-              <h4>Junior Developer</h4>
-              <p>
-                I'm a 90's and now I'm {age}, workingas a {occupation}.<br />
-                I'm a {hobby} lover.
-              </p>
-              <p>{msg}</p>
-              <ul className={"basic-info"}>
-                <li>BD: {birthday}</li>
-                <li>Tel: {contact}</li>
-                <li>
-                  Email: <a href="mailto:timothygoh@snsoft.my">{email}</a>
-                </li>
-              </ul>
 
-              <ul className={"social-site"}>
-                <li>
-                  <a href="https://www.facebook.com/timothygcy">Facebook</a>
-                </li>
-                <li>
-                  <a href="https://instagram.com/bleckshiba_film?igshid=hdqy5jnas534">
-                    Instagram
-                  </a>
-                </li>
-                <li>
-                  <a href="https://twitter.com/timothy_gcy">Twitter</a>
-                </li>
-                <li>
-                  <a href="https://my.linkedin.com/in/timothy-goh-4269ba164">
-                    LinkedIn
-                  </a>
-                </li>
-              </ul>
-            </div>
+            {this.state.res && (
+              <div className={'desc-panel res-block'}>
+                <h6>Hi, I am</h6>
+                <h3>{this.displayResult(this.state.res, 'name')}</h3>
+                <p>
+                  Currently {this.displayResult(this.state.res, 'age')}, bornt
+                  in {this.displayResult(this.state.res, 'place')}
+                </p>
+                <h4>
+                  Worked as a {this.displayResult(this.state.res, 'occupation')}
+                </h4>
+              </div>
+            )}
           </div>
         </div>
       </BasePage>
-    );
+    )
   }
 }

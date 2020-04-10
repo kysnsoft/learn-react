@@ -1,52 +1,43 @@
 import React from "react";
 import "./HeroApi.scss";
 import HeroAbilities from "../DotaAPI/HeroAbilities";
+import callApi from "../DotaAPI/FetchFunction";
 
 export default class HeroProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       id: this.props.match.params.id,
-      items: [],
-      isLoaded: false
+      items: this.props.location.state.heroInfo
     };
-
-    fetch("https://api.opendota.com/api/heroStats")
-      .then(res => res.json())
-      .then(json => {
-        this.setState({
-          items: json,
-          isLoaded: true
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
   }
+
+  // async componentDidMount() {
+  //   this.setState({
+  //     items: await callApi("/heroStats"),
+  //     isLoaded: true
+  //   });
+  // }
 
   winRate(win, total) {
     return 100 * (win / total);
   }
 
   render() {
-    const { isLoaded, items, id } = this.state;
-
-    if (!isLoaded) return <div>Loading...</div>;
-
+    const { items, id } = this.state;
+    console.log(id);
+    console.log(items);
     const add = "http://cdn.dota2.com/";
     const index = items.findIndex(x => x.localized_name === id);
     const selectHero = items[index];
     let divine, anceint, legend, archon, crusader, guardian, herald;
-
-    if (isLoaded) {
-      herald = this.winRate(selectHero["1_win"], selectHero["1_pick"]);
-      guardian = this.winRate(selectHero["2_win"], selectHero["2_pick"]);
-      crusader = this.winRate(selectHero["3_win"], selectHero["3_pick"]);
-      archon = this.winRate(selectHero["4_win"], selectHero["4_pick"]);
-      legend = this.winRate(selectHero["5_win"], selectHero["5_pick"]);
-      anceint = this.winRate(selectHero["6_win"], selectHero["6_pick"]);
-      divine = this.winRate(selectHero["7_win"], selectHero["7_pick"]);
-    }
+    herald = this.winRate(selectHero["1_win"], selectHero["1_pick"]);
+    guardian = this.winRate(selectHero["2_win"], selectHero["2_pick"]);
+    crusader = this.winRate(selectHero["3_win"], selectHero["3_pick"]);
+    archon = this.winRate(selectHero["4_win"], selectHero["4_pick"]);
+    legend = this.winRate(selectHero["5_win"], selectHero["5_pick"]);
+    anceint = this.winRate(selectHero["6_win"], selectHero["6_pick"]);
+    divine = this.winRate(selectHero["7_win"], selectHero["7_pick"]);
 
     return (
       <div>
@@ -134,8 +125,12 @@ export default class HeroProfile extends React.Component {
                   </tr>
                 </tbody>
               </table>
-              <button onClick={this.props.history.goBack}
-                className="btn btn-dark">Back</button>
+              <button
+                onClick={this.props.history.goBack}
+                className="btn btn-dark"
+              >
+                Back
+              </button>
             </div>
           </div>
         </div>

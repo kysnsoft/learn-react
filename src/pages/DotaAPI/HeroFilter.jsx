@@ -19,7 +19,14 @@ export default class HeroFilter extends React.Component {
               <span className="tooltip-text">
                 {item.localized_name} | {item.attack_type}
               </span>
-              <Link to={`../DotaAPI/HeroProfile/${item.localized_name}`}>
+              <Link
+                to={{
+                  pathname: `../DotaAPI/HeroProfile/${item.localized_name}`,
+                  state: {
+                    heroInfo: heroInfo
+                  }
+                }}
+              >
                 <img className={`hero-img`} src={add + item.img} />
               </Link>
             </div>

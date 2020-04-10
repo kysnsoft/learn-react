@@ -1,5 +1,6 @@
 import React from "react";
 import "./HeroApi.scss";
+import callApi from "../DotaAPI/FetchFunction";
 
 export default class HeroAbilities extends React.Component {
   constructor(props) {
@@ -12,27 +13,33 @@ export default class HeroAbilities extends React.Component {
     };
   }
 
-  componentDidMount() {
-    Promise.all([
-      fetch("https://api.opendota.com/api/constants/hero_abilities"),
-      fetch("https://api.opendota.com/api/constants/abilities")
-    ])
-      .then(([res1, res2]) => {
-        return Promise.all([res1.json(), res2.json()]);
-      })
-      .then(([res1, res2]) => {
-        this.setState({
-          items: res1,
-          abilities: res2,
-          isLoaded: true
-        });
-      });
+  async componentDidMount() {
+    // Promise.all([
+    //   fetch("https://api.opendota.com/api/constants/hero_abilities"),
+    //   fetch("https://api.opendota.com/api/constants/abilities")
+    // ])
+    //   .then(([res1, res2]) => {
+    //     return Promise.all([res1.json(), res2.json()]);
+    //   })
+    //   .then(([res1, res2]) => {
+    //     this.setState({
+    //       items: res1,
+    //       abilities: res2,
+    //       isLoaded: true
+    //     });
+    //   });
+
+    this.setState({
+      items: await callApi("/constants/hero_abilities"),
+      abilities: await callApi("/constants/abilities"),
+      isLoaded: true
+    });
   }
 
   render() {
     const { isLoaded, heroName, items, abilities } = this.state;
     let heroAbilities = [];
-    let getHeroAbilities = [];
+    let getHeroAbilities;
     if (isLoaded) {
       for (const properties in items[heroName]["abilities"]) {
         heroAbilities.push(items[heroName]["abilities"][properties]);
@@ -42,9 +49,7 @@ export default class HeroAbilities extends React.Component {
         nullAbilities => nullAbilities !== "generic_hidden"
       );
 
-      filterAbilities.forEach(element =>
-        getHeroAbilities.push(abilities[element])
-      );
+      getHeroAbilities = filterAbilities.map(element => abilities[element]);
 
       console.log(getHeroAbilities);
     }
